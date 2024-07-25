@@ -35,13 +35,13 @@ int main(int argc, char* argv[]) {
     std::string pipeline_desc = "rtspsrc location=rtsp://192.168.8.109:8554/RGBD ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
 
     // Define the HLS URL variable
-    std::string hls_url = "https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiC5gIU_XZhy1qsMj3ws7d6azywBSFy9vq9sncD8aK8YOxIQ4UWkYc8lxizGPHwRgCzg5hoZyVQ4c9Y1GW-Qyi2hssUDfPxe68ztfxe2oSIgwINwZCzp-z59tYZj6o4GAnuqkRyLGFiSs3yR4JEudOQ~";
+    std::string hls_url = "https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiDiWlJfdFQnDUpqi3bUg8L_p5mCxFkTs5bCzUayhGxrMxIQZLWmxlQqHGBMee0p9TAJoRoZlOP5LMADzBEtkidAL7PtxnmNsgPKAazM8SIgdaFtE4DjG-xyX6lZuymsSLIICEeU8hFkind7zWNgED4~";
 
     // Construct the pipeline description string
-    pipeline_desc =
+    //pipeline_desc =
         "souphttpsrc location=\"" + hls_url + "\" ! hlsdemux ! qtdemux ! h265parse ! nvh265dec ! appsink name=sink";
 
-    pipeline_desc =
+    //pipeline_desc =
         "souphttpsrc location=\"" + hls_url + "\" ! hlsdemux ! tsdemux ! h264parse ! nvh264dec ! appsink name=sink";
 
 
@@ -49,47 +49,46 @@ int main(int argc, char* argv[]) {
     g_print("Creating pipeline with description: %s\n", pipeline_desc.c_str());
 
 
-
     // Create individual elements
-    GstElement* source, * hlsdemux, * qtdemux, * parser, * decoder, * sink;
-    source = gst_element_factory_make("souphttpsrc", "source");
-    hlsdemux = gst_element_factory_make("hlsdemux", "hlsdemux");
-    qtdemux = gst_element_factory_make("qtdemux", "qtdemux");
-    parser = gst_element_factory_make("h265parse", "parser"); // Or h264parse depending on your stream
-    decoder = gst_element_factory_make("nvh265dec", "decoder"); // Or appropriate decoder for your hardware
-    sink = gst_element_factory_make("appsink", "sink");
+    //GstElement* source, * hlsdemux, * qtdemux, * parser, * decoder, * sink;
+    //source = gst_element_factory_make("souphttpsrc", "source");
+    //hlsdemux = gst_element_factory_make("hlsdemux", "hlsdemux");
+    //qtdemux = gst_element_factory_make("qtdemux", "qtdemux");
+    //parser = gst_element_factory_make("h265parse", "parser"); // Or h264parse depending on your stream
+    //decoder = gst_element_factory_make("nvh265dec", "decoder"); // Or appropriate decoder for your hardware
+    //sink = gst_element_factory_make("appsink", "sink");
 
-    // Set source property 
-    g_object_set(source, "location", hls_url.c_str(), NULL);
+    //// Set source property 
+    //g_object_set(source, "location", hls_url.c_str(), NULL);
 
-    // Create the pipeline
-    GstElement* pipeline = gst_pipeline_new("my-pipeline");
+    //// Create the pipeline
+    //GstElement* pipeline = gst_pipeline_new("my-pipeline");
 
-    // Add elements to the pipeline
-    gst_bin_add_many(GST_BIN(pipeline), source, hlsdemux, qtdemux, parser, decoder, sink, NULL);
+    //// Add elements to the pipeline
+    //gst_bin_add_many(GST_BIN(pipeline), source, hlsdemux, qtdemux, parser, decoder, sink, NULL);
 
-    // Link elements together
-    if (!gst_element_link_many(source, hlsdemux, qtdemux, parser, decoder, sink, NULL)) {
-        g_printerr("Elements could not be linked.\n");
-        gst_object_unref(pipeline);
-        return -1;
-    }
-
-
-    // Create the pipeline
-    //GError* error = nullptr;
-    //GstElement* pipeline = gst_parse_launch(pipeline_desc.c_str(), &error);
-
-    //if (!pipeline) {
-    //    g_print("Failed to create pipeline: %s\n", error->message);
-    //    g_error_free(error);
+    //// Link elements together
+    //if (!gst_element_link_many(source, hlsdemux, qtdemux, parser, decoder, sink, NULL)) {
+    //    g_printerr("Elements could not be linked.\n");
+    //    gst_object_unref(pipeline);
     //    return -1;
     //}
+
+
+    // Create the pipeline
+    GError* error = nullptr;
+    GstElement* pipeline = gst_parse_launch(pipeline_desc.c_str(), &error);
+
+    if (!pipeline) {
+        g_print("Failed to create pipeline: %s\n", error->message);
+        g_error_free(error);
+        return -1;
+    }
 
     g_print("Pipeline created successfully\n");
 
     // Get the appsink element from the pipeline
-    //GstElement* sink = gst_bin_get_by_name(GST_BIN(pipeline), "sink");
+    GstElement* sink = gst_bin_get_by_name(GST_BIN(pipeline), "sink");
     if (!sink) {
         g_print("Failed to get appsink element from pipeline\n");
         gst_object_unref(pipeline);
