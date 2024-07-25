@@ -29,9 +29,13 @@ static GstFlowReturn on_new_sample_from_sink(GstElement* sink, gpointer data) {
 
 int main(int argc, char* argv[]) {
     gst_init(&argc, &argv);
+    gst_debug_set_default_threshold(GST_LEVEL_WARNING);
 
     // Define the pipeline description
-    const gchar* pipeline_desc = "rtspsrc location=rtsp://192.168.8.109:8554/RGBD ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
+    gchar* pipeline_desc = "rtspsrc location=rtsp://192.168.8.109:8554/RGBD ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
+
+
+    pipeline_desc = "gst-launch-1.0 -v souphttpsrc location=\"https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiA2P9tAdhISguGLspKfdPf7_s6ndJ2H4pMYBSD-3AT6eRIQXMvX3oWYvxpDqcPReRH0_BoZJOYL5Rk6MgKfqcTnbLFadYK6PoHhHx6IayIgoP_FdhR3JidloXvQ8zAfxFZbAwSvvNB321ZrwbIn1jo~\" ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
 
     // Log pipeline description
     g_print("Creating pipeline with description: %s\n", pipeline_desc);
