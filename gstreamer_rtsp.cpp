@@ -35,7 +35,11 @@ int main(int argc, char* argv[]) {
     gchar* pipeline_desc = "rtspsrc location=rtsp://192.168.8.109:8554/RGBD ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
 
 
-    pipeline_desc = "gst-launch-1.0 -v souphttpsrc location=\"https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiA2P9tAdhISguGLspKfdPf7_s6ndJ2H4pMYBSD-3AT6eRIQXMvX3oWYvxpDqcPReRH0_BoZJOYL5Rk6MgKfqcTnbLFadYK6PoHhHx6IayIgoP_FdhR3JidloXvQ8zAfxFZbAwSvvNB321ZrwbIn1jo~\" ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
+    //pipeline_desc = "souphttpsrc location=\"https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiC67euMMC3vpIrPNuEkmrsuysQZr4Dc2nHOD7xfg-mCcBIQcPC211Bvd9-Lx0iQb9GUrBoZshu-DHmno3C4J4rcW9SV8cP0eRwecERm_SIg5O3QwrBin1bTpc9AxpmSFPfhT4sjNJleegqwHtSFtcw~\" ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
+
+    //pipeline_desc = "souphttpsrc location=\"https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiBsoyck1QXZAJD4zXPgMnG9jgWFGGmWRUyC3QFkQz_GqBIQwdUC4mp3vI83U5iJEiMZyhoZ7sX0gkLQaknnu6_DLpWxXCb_UFg9NIFOaSIgdPlD2Uca3qHjVfPntR0NRUKgZJkh3ULbiDVcbjGEuE4~\" ! hlsdemux ! h265parse ! nvh265dec ! appsink name=sink";
+
+    pipeline_desc = "souphttpsrc location=\"https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiCFecGsgUhwEgmESHqlMbnHvjCWESYlZxfwm7WcdcTwURIQC_Lgt26Z4vKFteb2PuTYQRoZAYsZGgibAnnwT4EbtmG1uWnmcRaoObKTjSIgmvfhiWvD8MC9ergC6ObTkLFPIQhG9keGN0nwzyfqJeQ~\" ! hlsdemux ! qtdemux ! h265parse ! nvh265dec ! appsink name=sink";
 
     // Log pipeline description
     g_print("Creating pipeline with description: %s\n", pipeline_desc);
