@@ -1,11 +1,37 @@
 #include <gst/gst.h>
 #include <iostream>
 
+static GstFlowReturn on_new_sample_from_sink(GstElement* sink, gpointer data) {
+    GstSample* sample;
+    GstBuffer* buffer;
+    GstMapInfo map;
+
+    // Pull sample from appsink
+    g_signal_emit_by_name(sink, "pull-sample", &sample);
+    if (sample) {
+        // Get buffer from sample
+        buffer = gst_sample_get_buffer(sample);
+        if (buffer) {
+            // Map buffer for reading
+            gst_buffer_map(buffer, &map, GST_MAP_READ);
+            // Process the data in map.data and map.size
+            std::cout << "Received " << map.size << " bytes of data" << std::endl;
+            // Unmap buffer
+            gst_buffer_unmap(buffer, &map);
+        }
+        // Unreference sample
+        gst_sample_unref(sample);
+        return GST_FLOW_OK;
+    }
+
+    return GST_FLOW_ERROR;
+}
+
 int main(int argc, char* argv[]) {
     gst_init(&argc, &argv);
 
     // Define the pipeline description
-    const gchar* pipeline_desc = "rtspsrc location=rtsp://192.168.8.109:8554/RGBD ! rtph265depay ! h265parse ! nvh265dec ! appsink";
+    const gchar* pipeline_desc = "rtspsrc location=rtsp://192.168.8.109:8554/RGBD ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
 
     // Log pipeline description
     g_print("Creating pipeline with description: %s\n", pipeline_desc);
@@ -21,6 +47,20 @@ int main(int argc, char* argv[]) {
     }
 
     g_print("Pipeline created successfully\n");
+
+    // Get the appsink element from the pipeline
+    GstElement* sink = gst_bin_get_by_name(GST_BIN(pipeline), "sink");
+    if (!sink) {
+        g_print("Failed to get appsink element from pipeline\n");
+        gst_object_unref(pipeline);
+        return -1;
+    }
+
+    // Set the appsink to emit signals to get data
+    g_object_set(sink, "emit-signals", TRUE, NULL);
+
+    // Connect the new-sample signal to the callback function
+    g_signal_connect(sink, "new-sample", G_CALLBACK(on_new_sample_from_sink), NULL);
 
     // Start playing the pipeline
     g_print("Setting pipeline to playing state\n");
