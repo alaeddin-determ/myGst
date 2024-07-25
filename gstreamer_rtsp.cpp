@@ -32,21 +32,25 @@ int main(int argc, char* argv[]) {
     gst_debug_set_default_threshold(GST_LEVEL_WARNING);
 
     // Define the pipeline description
-    gchar* pipeline_desc = "rtspsrc location=rtsp://192.168.8.109:8554/RGBD ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
+    std::string pipeline_desc = "rtspsrc location=rtsp://192.168.8.109:8554/RGBD ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
 
+    // Define the HLS URL variable
+    std::string hls_url = "https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiC5gIU_XZhy1qsMj3ws7d6azywBSFy9vq9sncD8aK8YOxIQ4UWkYc8lxizGPHwRgCzg5hoZyVQ4c9Y1GW-Qyi2hssUDfPxe68ztfxe2oSIgwINwZCzp-z59tYZj6o4GAnuqkRyLGFiSs3yR4JEudOQ~";
 
-    //pipeline_desc = "souphttpsrc location=\"https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiC67euMMC3vpIrPNuEkmrsuysQZr4Dc2nHOD7xfg-mCcBIQcPC211Bvd9-Lx0iQb9GUrBoZshu-DHmno3C4J4rcW9SV8cP0eRwecERm_SIg5O3QwrBin1bTpc9AxpmSFPfhT4sjNJleegqwHtSFtcw~\" ! rtph265depay ! h265parse ! nvh265dec ! appsink name=sink";
+    // Construct the pipeline description string
+    pipeline_desc =
+        "souphttpsrc location=\"" + hls_url + "\" ! hlsdemux ! qtdemux ! h265parse ! nvh265dec ! appsink name=sink";
 
-    //pipeline_desc = "souphttpsrc location=\"https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiBsoyck1QXZAJD4zXPgMnG9jgWFGGmWRUyC3QFkQz_GqBIQwdUC4mp3vI83U5iJEiMZyhoZ7sX0gkLQaknnu6_DLpWxXCb_UFg9NIFOaSIgdPlD2Uca3qHjVfPntR0NRUKgZJkh3ULbiDVcbjGEuE4~\" ! hlsdemux ! h265parse ! nvh265dec ! appsink name=sink";
+    // Log pipeline description
+    g_print("Creating pipeline with description: %s\n", pipeline_desc.c_str());
 
-    pipeline_desc = "souphttpsrc location=\"https://b-f123ebe5.kinesisvideo.ap-southeast-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiCFecGsgUhwEgmESHqlMbnHvjCWESYlZxfwm7WcdcTwURIQC_Lgt26Z4vKFteb2PuTYQRoZAYsZGgibAnnwT4EbtmG1uWnmcRaoObKTjSIgmvfhiWvD8MC9ergC6ObTkLFPIQhG9keGN0nwzyfqJeQ~\" ! hlsdemux ! qtdemux ! h265parse ! nvh265dec ! appsink name=sink";
 
     // Log pipeline description
     g_print("Creating pipeline with description: %s\n", pipeline_desc);
 
     // Create the pipeline
     GError* error = nullptr;
-    GstElement* pipeline = gst_parse_launch(pipeline_desc, &error);
+    GstElement* pipeline = gst_parse_launch(pipeline_desc.c_str(), &error);
 
     if (!pipeline) {
         g_print("Failed to create pipeline: %s\n", error->message);
