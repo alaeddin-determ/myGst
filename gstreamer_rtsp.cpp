@@ -41,6 +41,9 @@ int main(int argc, char* argv[]) {
     pipeline_desc =
         "souphttpsrc location=\"" + hls_url + "\" ! hlsdemux ! qtdemux ! h265parse ! nvh265dec ! appsink name=sink";
 
+    pipeline_desc =
+        "souphttpsrc location=\"" + hls_url + "\" ! hlsdemux ! tsdemux ! h264parse ! nvh264dec ! appsink name=sink";
+
     // Log pipeline description
     g_print("Creating pipeline with description: %s\n", pipeline_desc.c_str());
 
